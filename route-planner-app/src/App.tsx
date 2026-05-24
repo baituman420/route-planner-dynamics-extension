@@ -209,9 +209,157 @@ function App() {
 
   useEffect(() => {
     // We no longer rely strictly on localStorage for the master record, 
-    // but we can load the very latest session from Dexie initially
+    // but we can load the very latest session from Dexie initially.
+    // If no session exists, we automatically preload our Bilbao 5-stop demo.
     const loadLast = async () => {
-       const latest = await db.sessions.orderBy('importedAt').last();
+       let latest = await db.sessions.orderBy('importedAt').last();
+       if (!latest) {
+          const demoSession: RouteSession = {
+             id: 'session_demo_bilbao',
+             fileName: 'Ruta de Demostración - Bilbao',
+             importedAt: Date.now(),
+             drivers: [
+                { id: '1', name: 'Conductor Principal', color: '#10B981' }
+             ],
+             stops: [
+                {
+                   id: 'demo_1',
+                   routeGroup: 'DEMO_BILBAO',
+                   customerCode: 'CLI-001',
+                   customerName: 'Bistro Guggenheim Bilbao',
+                   address: 'Avenida Abandoibarra 2',
+                   city: 'BILBAO',
+                   postalCode: '48009',
+                   deliveryStart: '09:00:00',
+                   deliveryEnd: '13:00:00',
+                   pageNumber: 1,
+                   originalText: 'Demo Stop 1: Bistro Guggenheim',
+                   extraServiceTime: 10,
+                   priority: false,
+                   fixedFirst: false,
+                   fixedLast: false,
+                   excluded: false,
+                   geocodeStatus: 'success',
+                   lat: 43.2687,
+                   lng: -2.9340,
+                   optimizedOrder: 1,
+                   weight: 15.5,
+                   boxCount: 3,
+                   assignedDriverId: '1',
+                   status: 'pending'
+                },
+                {
+                   id: 'demo_2',
+                   routeGroup: 'DEMO_BILBAO',
+                   customerCode: 'CLI-002',
+                   customerName: 'Cafetería Gran Vía Premium',
+                   address: 'Gran Via 25',
+                   city: 'BILBAO',
+                   postalCode: '48001',
+                   deliveryStart: '08:30:00',
+                   deliveryEnd: '14:30:00',
+                   pageNumber: 1,
+                   originalText: 'Demo Stop 2: Cafetería Gran Vía',
+                   extraServiceTime: 5,
+                   priority: false,
+                   fixedFirst: false,
+                   fixedLast: false,
+                   excluded: false,
+                   geocodeStatus: 'success',
+                   lat: 43.2625,
+                   lng: -2.9315,
+                   optimizedOrder: 2,
+                   weight: 8.2,
+                   boxCount: 2,
+                   assignedDriverId: '1',
+                   status: 'pending'
+                },
+                {
+                   id: 'demo_3',
+                   routeGroup: 'DEMO_BILBAO',
+                   customerCode: 'CLI-003',
+                   customerName: 'Hotel Carlton Suites',
+                   address: 'Plaza Federico Moyúa 2',
+                   city: 'BILBAO',
+                   postalCode: '48009',
+                   deliveryStart: '10:00:00',
+                   deliveryEnd: '16:00:00',
+                   pageNumber: 1,
+                   originalText: 'Demo Stop 3: Hotel Carlton',
+                   extraServiceTime: 5,
+                   priority: false,
+                   fixedFirst: false,
+                   fixedLast: false,
+                   excluded: false,
+                   geocodeStatus: 'success',
+                   lat: 43.2629,
+                   lng: -2.9372,
+                   optimizedOrder: 3,
+                   weight: 34.0,
+                   boxCount: 7,
+                   assignedDriverId: '1',
+                   status: 'pending'
+                },
+                {
+                   id: 'demo_4',
+                   routeGroup: 'DEMO_BILBAO',
+                   customerCode: 'CLI-004',
+                   customerName: 'Pescadería Ribera Logística',
+                   address: 'Calle Erribera s/n',
+                   city: 'BILBAO',
+                   postalCode: '48005',
+                   deliveryStart: '07:30:00',
+                   deliveryEnd: '12:00:00',
+                   pageNumber: 1,
+                   originalText: 'Demo Stop 4: Mercado Ribera',
+                   extraServiceTime: 15,
+                   priority: false,
+                   fixedFirst: false,
+                   fixedLast: false,
+                   excluded: false,
+                   geocodeStatus: 'success',
+                   lat: 43.2568,
+                   lng: -2.9238,
+                   optimizedOrder: 4,
+                   weight: 55.0,
+                   boxCount: 12,
+                   assignedDriverId: '1',
+                   status: 'pending'
+                },
+                {
+                   id: 'demo_5',
+                   routeGroup: 'DEMO_BILBAO',
+                   customerCode: 'CLI-005',
+                   customerName: 'Librería Elkar Liburuak',
+                   address: 'Licenciado Poza 14',
+                   city: 'BILBAO',
+                   postalCode: '48008',
+                   deliveryStart: '09:00:00',
+                   deliveryEnd: '19:00:00',
+                   pageNumber: 1,
+                   originalText: 'Demo Stop 5: Librería Elkar',
+                   extraServiceTime: 5,
+                   priority: false,
+                   fixedFirst: false,
+                   fixedLast: false,
+                   excluded: false,
+                   geocodeStatus: 'success',
+                   lat: 43.2612,
+                   lng: -2.9395,
+                   optimizedOrder: 5,
+                   weight: 12.0,
+                   boxCount: 4,
+                   assignedDriverId: '1',
+                   status: 'pending'
+                }
+             ],
+             status: 'optimized',
+             notes: 'Ruta de demostración precargada automáticamente para evaluación del sistema.'
+          };
+          await db.sessions.put(demoSession);
+          latest = demoSession;
+       }
+
        if (latest) {
           setSession(latest);
           if (latest.status === 'imported') setActiveTab('review');
