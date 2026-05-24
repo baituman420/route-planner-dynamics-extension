@@ -21,6 +21,106 @@ function App() {
   const [ showScanner, setShowScanner ] = useState(false);
   const [activeExpandedStop, setActiveExpandedStop] = useState<string | null>(null);
   const [isExtension, setIsExtension] = useState(false);
+  const [circularRoute, setCircularRoute] = useState(false);
+
+  const handleUpdateStartPoint = async (address: string) => {
+    if (!session) return;
+    const newSession: RouteSession = {
+      ...session,
+      startAddress: address,
+      startLat: undefined,
+      startLng: undefined,
+      startGeocodeStatus: 'idle'
+    };
+    setSession(newSession);
+    await saveSessionToDB(newSession);
+  };
+
+  const handleUpdateEndPoint = async (address: string) => {
+    if (!session) return;
+    const newSession: RouteSession = {
+      ...session,
+      endAddress: address,
+      endLat: undefined,
+      endLng: undefined,
+      endGeocodeStatus: 'idle'
+    };
+    setSession(newSession);
+    await saveSessionToDB(newSession);
+  };
+
+  const handleGeocodeStart = async () => {
+    if (!session || !session.startAddress) return;
+    setLoading(true);
+    const geo = await geocodeAddress(session.startAddress, 'BILBAO');
+    if (geo) {
+      const newSession: RouteSession = {
+        ...session,
+        startLat: geo.lat,
+        startLng: geo.lng,
+        startGeocodeStatus: 'success'
+      };
+      if (circularRoute) {
+        newSession.endAddress = session.startAddress;
+        newSession.endLat = geo.lat;
+        newSession.endLng = geo.lng;
+        newSession.endGeocodeStatus = 'success';
+      }
+      setSession(newSession);
+      await saveSessionToDB(newSession);
+      alert('Punto de partida geocodificado con éxito.');
+    } else {
+      alert('No se pudo geocodificar el punto de partida. Revisa la dirección.');
+    }
+    setLoading(false);
+  };
+
+  const handleGeocodeEnd = async () => {
+    if (!session || !session.endAddress) return;
+    setLoading(true);
+    const geo = await geocodeAddress(session.endAddress, 'BILBAO');
+    if (geo) {
+      const newSession: RouteSession = {
+        ...session,
+        endLat: geo.lat,
+        endLng: geo.lng,
+        endGeocodeStatus: 'success'
+      };
+      setSession(newSession);
+      await saveSessionToDB(newSession);
+      alert('Punto de destino final geocodificado con éxito.');
+    } else {
+      alert('No se pudo geocodificar el punto de retorno. Revisa la dirección.');
+    }
+    setLoading(false);
+  };
+
+  const handleToggleCircularRoute = async (checked: boolean) => {
+    setCircularRoute(checked);
+    if (!session) return;
+    
+    let newSession: RouteSession = { ...session };
+    if (checked) {
+      newSession = {
+        ...session,
+        endAddress: session.startAddress,
+        endLat: session.startLat,
+        endLng: session.startLng,
+        endGeocodeStatus: session.startGeocodeStatus
+      };
+    } else {
+      newSession = {
+        ...session,
+        endAddress: '',
+        endLat: undefined,
+        endLng: undefined,
+        endGeocodeStatus: 'idle'
+      };
+    }
+    setSession(newSession);
+    await saveSessionToDB(newSession);
+  };
+
 
   useEffect(() => {
     const isExt = typeof chrome !== 'undefined' && !!chrome.runtime;
@@ -218,6 +318,14 @@ function App() {
              id: 'session_demo_bilbao',
              fileName: 'Ruta de Demostración - Bilbao',
              importedAt: Date.now(),
+             startAddress: 'Terminal de Carga de Bilbao, Derio',
+             startLat: 43.3011,
+             startLng: -2.9106,
+             startGeocodeStatus: 'success',
+             endAddress: 'Centro de Distribución (Bilbao Centro)',
+             endLat: 43.2505,
+             endLng: -2.9015,
+             endGeocodeStatus: 'success',
              drivers: [
                 { id: '1', name: 'Conductor Principal', color: '#10B981' }
              ],
@@ -362,6 +470,7 @@ function App() {
 
        if (latest) {
           setSession(latest);
+          setCircularRoute(!!latest.startAddress && latest.startAddress === latest.endAddress);
           if (latest.status === 'imported') setActiveTab('review');
           else if (latest.status === 'optimized') setActiveTab('map');
        }
@@ -465,7 +574,11 @@ function App() {
   const handleOptimize = () => {
     if(!session) return;
     try {
-       const optimized = optimizeForDrivers(session.stops, session.drivers || []);
+       const startPoint = session.startLat && session.startLng
+         ? { lat: session.startLat, lng: session.startLng }
+         : undefined;
+
+       const optimized = optimizeForDrivers(session.stops, session.drivers || [], startPoint);
        
        const unoptimized = session.stops.filter(s => 
            !optimized.find(op => op.id === s.id)
@@ -645,6 +758,98 @@ function App() {
                  </button>
                </div>
             </div>
+
+            {/* CONFIGURACIÓN DE DEPÓSITO / PUNTO DE PARTIDA Y LLEGADA */}
+            <div className="bg-white p-5 rounded-2xl border border-gray-150 shadow-sm transition hover:shadow-md">
+              <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+                    <Navigation className="w-5 h-5 animate-pulse" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-800 text-sm">Puntos de Origen y Retorno</h3>
+                    <p className="text-xs text-gray-500">Configura dónde empieza y termina tu jornada de reparto</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Origen / Inicio */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-gray-750 uppercase tracking-wider">🏠 Punto de Salida (Inicio)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Ej: Aeropuerto de Bilbao o Dirección..."
+                      value={session.startAddress || ''}
+                      onChange={(e) => handleUpdateStartPoint(e.target.value)}
+                      className="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                    />
+                    <button
+                      onClick={handleGeocodeStart}
+                      disabled={loading || !session.startAddress}
+                      className="px-3.5 py-2 bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 text-xs font-bold rounded-xl shadow-xs transition active:scale-95 disabled:opacity-50"
+                    >
+                      📍 Geo
+                    </button>
+                  </div>
+                  {session.startLat && session.startLng ? (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-600 bg-green-50 px-2.5 py-0.5 rounded-full">
+                      ✅ Geocodificado: {session.startLat.toFixed(4)}, {session.startLng.toFixed(4)}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full animate-pulse">
+                      ⚠️ Requiere geocodificación
+                    </span>
+                  )}
+                </div>
+
+                {/* Destino / Retorno */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-gray-750 uppercase tracking-wider">🏁 Punto de Llegada (Retorno)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Ej: Almacén central o Dirección..."
+                      value={session.endAddress || ''}
+                      disabled={!!circularRoute}
+                      onChange={(e) => handleUpdateEndPoint(e.target.value)}
+                      className="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:bg-gray-50 disabled:text-gray-400"
+                    />
+                    <button
+                      onClick={handleGeocodeEnd}
+                      disabled={loading || !session.endAddress || circularRoute}
+                      className="px-3.5 py-2 bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 text-xs font-bold rounded-xl shadow-xs transition active:scale-95 disabled:opacity-50"
+                    >
+                      📍 Geo
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between mt-1.5">
+                    <label className="flex items-center gap-1.5 text-xs text-gray-600 font-semibold cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={!!circularRoute}
+                        onChange={(e) => handleToggleCircularRoute(e.target.checked)}
+                        className="form-checkbox w-3.5 h-3.5 text-blue-600 rounded"
+                      />
+                      Ruta Circular (Mismo punto de inicio)
+                    </label>
+                    {!circularRoute && (
+                      session.endLat && session.endLng ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-600 bg-green-50 px-2.5 py-0.5 rounded-full">
+                          ✅ Listo
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full">
+                          ⚠️ Pendiente
+                        </span>
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
             
             {session.stops.length === 0 ? (
                <div className="text-center p-8 text-gray-500 bg-white rounded shadow-sm">No valid stops found. Load a route or insert manually.</div>
@@ -664,7 +869,13 @@ function App() {
              <div className="p-4 pt-0">
                 <h2 className="text-lg font-bold text-gray-800 mb-2">Optimized Route Map</h2>
              </div>
-             <RouteMap stops={session.stops} onMarkerClick={navigateToStop} drivers={session.drivers} />
+             <RouteMap 
+               stops={session.stops} 
+               onMarkerClick={navigateToStop} 
+               drivers={session.drivers}
+               startPoint={session.startLat && session.startLng ? { lat: session.startLat, lng: session.startLng, address: session.startAddress || '' } : null}
+               endPoint={session.endLat && session.endLng ? { lat: session.endLat, lng: session.endLng, address: session.endAddress || '' } : null}
+             />
              <div className="p-4 space-y-2 mt-4 bg-gray-100 flex-1 overflow-y-auto">
                <h3 className="font-bold text-gray-600 uppercase text-xs">Route Sequence</h3>
                {session.drivers ? (

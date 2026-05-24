@@ -57,4 +57,16 @@ export interface RouteSession {
   status: 'imported' | 'reviewing' | 'optimized' | 'navigating';
   currentStopId?: string;
   notes: string;
+
+  // Custom Starting and Ending Points
+  startAddress?: string;
+  startLat?: number;
+  startLng?: number;
+  startGeocodeStatus?: 'pending' | 'success' | 'failed' | 'idle';
+
+  endAddress?: string;
+  endLat?: number;
+  endLng?: number;
+  endGeocodeStatus?: 'pending' | 'success' | 'failed' | 'idle';
 }
+

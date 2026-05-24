@@ -185,9 +185,9 @@ export function optimizeRoute(stops: DeliveryStop[], startPoint?: { lat: number,
   return optimized.map((s, idx) => ({ ...s, optimizedOrder: idx + 1 }));
 }
 
-export function optimizeForDrivers(stops: DeliveryStop[], drivers: Driver[]): DeliveryStop[] {
+export function optimizeForDrivers(stops: DeliveryStop[], drivers: Driver[], startPoint?: { lat: number, lng: number }): DeliveryStop[] {
   if (!drivers || drivers.length <= 1) {
-    const optimized = optimizeRoute(stops);
+    const optimized = optimizeRoute(stops, startPoint);
     if(drivers && drivers.length === 1) {
        return optimized.map(s => ({...s, assignedDriverId: drivers[0].id}));
     }
@@ -199,7 +199,7 @@ export function optimizeForDrivers(stops: DeliveryStop[], drivers: Driver[]): De
   
   for(let i = 0; i < drivers.length; i++) {
     const clusterStops = clusters.get(i) || [];
-    const optimizedCluster = optimizeRoute(clusterStops);
+    const optimizedCluster = optimizeRoute(clusterStops, startPoint);
     // assign driver id
     optimizedCluster.forEach(s => {
       s.assignedDriverId = drivers[i].id;
@@ -209,3 +209,4 @@ export function optimizeForDrivers(stops: DeliveryStop[], drivers: Driver[]): De
   
   return result;
 }
+

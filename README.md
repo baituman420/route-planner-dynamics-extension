@@ -10,6 +10,8 @@ Una solución integral y autónoma para la planificación y optimización de rut
 >
 > 1. 🌐 **[PROBAR APLICACIÓN EN VIVO (Click Aquí)](https://baituman420.github.io/route-planner-dynamics-extension/)**
 >    * Abre la aplicación directamente en tu navegador. **Precargará automáticamente una ruta de demostración de Bilbao** (5 paradas de reparto geolocalizadas y optimizadas, listas para simular la entrega). ¡Ideal para ver el mapa interactivo y los gráficos de rendimiento al instante!
+
+
 >
 > 2. 📦 **[DESCARGAR EXTENSIÓN PARA EDGE (ZIP Directo)](https://raw.githubusercontent.com/baituman420/route-planner-dynamics-extension/main/extension.zip)**
 >    * Descarga la extensión lista para conectar con **Microsoft Dynamics 365**.
