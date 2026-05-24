@@ -7,6 +7,17 @@ Una solución integral y autónoma para la planificación de rutas de reparto di
 
 ---
 
+## 🔗 Enlaces de Acceso Rápido y Descargas Directas
+
+Para simplificar al máximo el uso a personas sin conocimientos técnicos (¡ideal para compartir con tu jefe!), hemos preparado los siguientes accesos directos de un solo clic:
+
+* 🌐 **[Aplicación Web En Vivo (GitHub Pages)](https://baituman420.github.io/route-planner-dynamics-extension/)**: Ejecuta la aplicación directamente en tu navegador sin instalar nada. Incluye una **ruta de demostración en Bilbao precargada automáticamente** (5 paradas de reparto geolocalizadas y optimizadas, listas para simular la navegación en tiempo real).
+* 📦 **[Descargar Extensión para Edge (ZIP de un clic)](https://raw.githubusercontent.com/baituman420/route-planner-dynamics-extension/main/extension.zip)**: Descarga directa del paquete compilado de la extensión. Solo descárgalo, descomprímelo y cárgalo en `edge://extensions` siguiendo las instrucciones de abajo.
+* 🤖 **[Descargar Aplicación para Android (APK Directo)](https://raw.githubusercontent.com/baituman420/route-planner-dynamics-extension/main/route-planner.apk)**: Descarga directa del instalador nativo APK para instalar el planificador de rutas y lector de albaranes directamente en tu móvil o tablet de reparto.
+
+---
+
+
 ## 🌟 Características Clave
 
 ### 1. Integración en Tiempo Real con Dynamics 365 (Extensión Edge)
