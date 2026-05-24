@@ -693,40 +693,53 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-      <header className="bg-blue-600 text-white p-4 shadow-md flex flex-col sm:flex-row justify-between items-center gap-3 z-10 sticky top-0">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans pb-24 md:pb-8">
+      {/* PREMIUM HEADER */}
+      <header className="bg-slate-900/95 backdrop-blur-md text-white px-5 py-3.5 shadow-lg border-b border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-3.5 z-10 sticky top-0">
         <div className="flex items-center gap-3">
-          <h1 className="text-xl font-bold flex items-center gap-2">
-            <Navigation className="w-5 h-5"/> Route Planner
-          </h1>
-          <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full font-bold shadow-sm ${isExtension ? 'bg-green-500 text-white' : 'bg-blue-800 text-blue-200'}`}>
-            {isExtension ? 'Edge Extension' : 'Web/App Mode'}
-          </span>
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+            <Navigation className="w-5 h-5 text-white animate-bounce"/>
+          </div>
+          <div>
+            <h1 className="text-base font-black tracking-tight flex items-center gap-2">
+              Route Planner <span className="text-[9px] font-medium tracking-normal text-slate-400">v2.5</span>
+            </h1>
+            <span className={`text-[9px] uppercase tracking-wider font-extrabold px-2 py-0.2 rounded-md ${isExtension ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'}`}>
+              {isExtension ? 'Dynamics 365 Addon' : 'Cloud Standalone'}
+            </span>
+          </div>
         </div>
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+        
+        <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
           <button 
             onClick={triggerDynamicsExtraction} 
-            className="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1.5 shadow transition active:scale-95 cursor-pointer"
+            className="relative overflow-hidden bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white text-[11px] font-extrabold px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg shadow-orange-500/20 active:scale-95 transition-all duration-200 cursor-pointer"
             title="Importar Pedido de Venta activo de Dynamics 365"
           >
-            <span className="relative flex h-2 w-2">
+            <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
             </span>
             📥 D365 Import
           </button>
+          
           {session && (
-             <span className="text-xs font-semibold bg-blue-700 px-2 py-1.5 rounded shadow-sm">
-                {session.stops.length} Stops ({session.stops.filter((s:any)=>s.geocodeStatus==='success').length} Geo)
+             <span className="text-[11px] font-bold bg-slate-800 border border-slate-700/60 px-3 py-2 rounded-xl text-slate-200 shadow-inner">
+                {session.stops.length} Clientes ({session.stops.filter((s:any)=>s.geocodeStatus==='success').length} Geo)
              </span>
           )}
         </div>
       </header>
       
-      <main className="flex-1 overflow-y-auto w-full mx-auto md:max-w-4xl p-0 md:p-4 pb-24 md:pb-8">
+      {/* MAIN CONTAINER */}
+      <main className="flex-1 overflow-y-auto w-full mx-auto md:max-w-4xl p-4 animate-fade-in">
         {loading && (
-           <div className="m-4 md:m-0 p-4 bg-yellow-100 text-yellow-800 text-center text-sm font-semibold rounded shadow-sm mb-4">
-              Processing... {geocodingProgress > 0 && `${geocodingProgress}%`}
+           <div className="p-4 bg-gradient-to-r from-amber-500/10 to-amber-600/5 text-amber-800 text-center text-xs font-bold rounded-2xl border border-amber-500/20 shadow-sm mb-4 flex items-center justify-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+              </span>
+              Optimizando Secuencias y Trazados... {geocodingProgress > 0 && `${geocodingProgress}%`}
            </div>
         )}
 
@@ -735,78 +748,84 @@ function App() {
         )}
 
         {activeTab === 'review' && session && (
-          <div className="p-4 space-y-4">
+          <div className="p-0 md:p-1 space-y-5 animate-fade-in">
             
             {showScanner && (
                <OCRScanner onAddScannedStop={handleAddScannedStop} onCancel={() => setShowScanner(false)} />
             )}
 
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-               <h2 className="text-lg font-bold text-gray-800">Review Data</h2>
+            {/* PREMIUM REVIEW CONTROL BAR */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/95 backdrop-blur-md border border-slate-800 p-5 rounded-2xl shadow-lg">
+               <div>
+                 <h2 className="text-base font-black text-white">Revisión de Clientes</h2>
+                 <p className="text-xs text-slate-400 mt-0.5">Valida las direcciones, volúmenes y prioridades del reparto</p>
+               </div>
                <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                 <button onClick={() => setShowScanner(true)} className="flex-1 sm:flex-none bg-indigo-600 text-white px-3 py-2 rounded text-sm font-semibold shadow-sm flex items-center justify-center gap-1 hover:bg-indigo-700">
-                    <Camera className="w-4 h-4" /> Scan
+                 <button onClick={() => setShowScanner(true)} className="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-indigo-400 hover:text-indigo-300 border border-slate-700/80 px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-sm flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
+                    <Camera className="w-4 h-4" /> Escanear
                  </button>
-                 <button onClick={addManualStop} className="flex-1 sm:flex-none bg-gray-600 text-white px-3 py-2 rounded text-sm font-semibold shadow-sm flex items-center justify-center gap-1 hover:bg-gray-700">
-                    <Plus className="w-4 h-4" /> Add
+                 <button onClick={addManualStop} className="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/80 px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-sm flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
+                    <Plus className="w-4 h-4" /> Añadir
                  </button>
-                 <button onClick={startGeocoding} disabled={loading} className="flex-1 sm:flex-none bg-green-600 text-white px-3 py-2 rounded text-sm font-semibold shadow-sm flex items-center justify-center gap-1 hover:bg-green-700">
-                    <MapIcon className="w-4 h-4" /> Geo
+                 <button onClick={startGeocoding} disabled={loading} className="flex-1 sm:flex-none bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-3.5 py-2.5 rounded-xl text-xs font-extrabold shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-1.5 transition active:scale-95 disabled:opacity-50 cursor-pointer">
+                    <MapIcon className="w-4 h-4" /> Geocodificar
                  </button>
-                 <button onClick={handleOptimize} className="flex-1 sm:flex-none bg-blue-600 text-white px-3 py-2 rounded text-sm font-semibold shadow-sm flex items-center justify-center gap-1 hover:bg-blue-700">
-                    <Play className="w-4 h-4" /> Opt
+                 <button onClick={handleOptimize} className="flex-1 sm:flex-none bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-3.5 py-2.5 rounded-xl text-xs font-extrabold shadow-lg shadow-blue-500/15 flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
+                    <Play className="w-4 h-4 animate-pulse" /> Optimizar Ruta
                  </button>
                </div>
             </div>
 
             {/* CONFIGURACIÓN DE DEPÓSITO / PUNTO DE PARTIDA Y LLEGADA */}
-            <div className="bg-white p-5 rounded-2xl border border-gray-150 shadow-sm transition hover:shadow-md">
-              <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm transition hover:shadow-md">
+              <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3.5">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
-                    <Navigation className="w-5 h-5 animate-pulse" />
+                  <div className="p-2 bg-gradient-to-tr from-blue-500/10 to-indigo-600/10 text-blue-600 rounded-xl border border-blue-500/15">
+                    <Navigation className="w-5 h-5 text-indigo-600 animate-pulse" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-800 text-sm">Puntos de Origen y Retorno</h3>
-                    <p className="text-xs text-gray-500">Configura dónde empieza y termina tu jornada de reparto</p>
+                    <h3 className="font-black text-slate-800 text-sm">Puntos de Origen y Retorno</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">Establece la base operativa para calcular tiempos y rutas óptimas</p>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {/* Origen / Inicio */}
                 <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-gray-750 uppercase tracking-wider">🏠 Punto de Salida (Inicio)</label>
+                  <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider">🏠 Punto de Salida (Inicio)</label>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       placeholder="Ej: Aeropuerto de Bilbao o Dirección..."
                       value={session.startAddress || ''}
                       onChange={(e) => handleUpdateStartPoint(e.target.value)}
-                      className="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                      className="flex-1 text-xs px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition shadow-sm"
                     />
                     <button
                       onClick={handleGeocodeStart}
                       disabled={loading || !session.startAddress}
-                      className="px-3.5 py-2 bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 text-xs font-bold rounded-xl shadow-xs transition active:scale-95 disabled:opacity-50"
+                      className="px-4 py-2.5 bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold rounded-xl shadow-md transition active:scale-95 disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
                     >
                       📍 Geo
                     </button>
                   </div>
                   {session.startLat && session.startLng ? (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-600 bg-green-50 px-2.5 py-0.5 rounded-full">
-                      ✅ Geocodificado: {session.startLat.toFixed(4)}, {session.startLng.toFixed(4)}
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      Localizado: {session.startLat.toFixed(4)}, {session.startLng.toFixed(4)}
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full animate-pulse">
-                      ⚠️ Requiere geocodificación
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-amber-600 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-lg animate-pulse">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                      Falta geocodificar origen
                     </span>
                   )}
                 </div>
 
                 {/* Destino / Retorno */}
                 <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-gray-750 uppercase tracking-wider">🏁 Punto de Llegada (Retorno)</label>
+                  <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider">🏁 Punto de Llegada (Retorno)</label>
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -814,34 +833,34 @@ function App() {
                       value={session.endAddress || ''}
                       disabled={!!circularRoute}
                       onChange={(e) => handleUpdateEndPoint(e.target.value)}
-                      className="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:bg-gray-50 disabled:text-gray-400"
+                      className="flex-1 text-xs px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition shadow-sm disabled:bg-slate-50 disabled:text-slate-400"
                     />
                     <button
                       onClick={handleGeocodeEnd}
                       disabled={loading || !session.endAddress || circularRoute}
-                      className="px-3.5 py-2 bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 text-xs font-bold rounded-xl shadow-xs transition active:scale-95 disabled:opacity-50"
+                      className="px-4 py-2.5 bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold rounded-xl shadow-md transition active:scale-95 disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
                     >
                       📍 Geo
                     </button>
                   </div>
                   <div className="flex items-center justify-between mt-1.5">
-                    <label className="flex items-center gap-1.5 text-xs text-gray-600 font-semibold cursor-pointer">
+                    <label className="flex items-center gap-1.5 text-xs text-slate-600 font-bold cursor-pointer select-none">
                       <input
                         type="checkbox"
                         checked={!!circularRoute}
                         onChange={(e) => handleToggleCircularRoute(e.target.checked)}
-                        className="form-checkbox w-3.5 h-3.5 text-blue-600 rounded"
+                        className="form-checkbox w-4 h-4 text-blue-600 rounded-lg border-slate-350 focus:ring-blue-500/40 focus:ring-2"
                       />
-                      Ruta Circular (Mismo punto de inicio)
+                      Ruta Circular (Mismo punto)
                     </label>
                     {!circularRoute && (
                       session.endLat && session.endLng ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-600 bg-green-50 px-2.5 py-0.5 rounded-full">
-                          ✅ Listo
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+                          Listo
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full">
-                          ⚠️ Pendiente
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-amber-600 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-lg">
+                          Pendiente
                         </span>
                       )
                     )}
@@ -1084,24 +1103,44 @@ function App() {
 
       </main>
 
-      {/* BOTTOM NAVIGATION */}
-      <nav className="fixed bottom-0 w-full bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] flex md:relative md:shadow-none z-20">
-         <button onClick={() => setActiveTab('manager')} className={`flex-1 flex flex-col items-center py-3 text-xs ${activeTab === 'manager' ? 'text-blue-600 font-bold bg-blue-50' : 'text-gray-500 font-medium'}`}>
-            <Users className="w-5 h-5 mb-1" /> Manager
+      {/* FLOATING BOTTOM NAVIGATION DOCK */}
+      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 w-[92%] max-w-lg bg-slate-900/90 backdrop-blur-xl border border-slate-800/80 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] px-3 py-2 z-30 flex items-center justify-between gap-1">
+         <button 
+           onClick={() => setActiveTab('manager')} 
+           className={`flex-1 flex flex-col items-center justify-center py-2 rounded-2xl text-[10px] tracking-wide transition-all duration-205 cursor-pointer ${activeTab === 'manager' ? 'bg-gradient-to-tr from-blue-500 to-indigo-600 text-white font-extrabold shadow-lg shadow-blue-500/20 scale-105' : 'text-slate-400 hover:text-slate-200 font-bold'}`}
+         >
+            <Users className={`w-4 h-4 mb-1 ${activeTab === 'manager' ? 'animate-pulse' : ''}`} />
+            <span>Inicio</span>
          </button>
-         <button onClick={() => setActiveTab('review')} className={`flex-1 flex flex-col items-center py-3 text-xs border-l border-gray-200 ${activeTab === 'review' ? 'text-blue-600 font-bold bg-blue-50' : 'text-gray-500 font-medium'}`}>
-            <Edit className="w-5 h-5 mb-1" /> Review
+         <button 
+           onClick={() => setActiveTab('review')} 
+           className={`flex-1 flex flex-col items-center justify-center py-2 rounded-2xl text-[10px] tracking-wide transition-all duration-205 cursor-pointer ${activeTab === 'review' ? 'bg-gradient-to-tr from-blue-500 to-indigo-600 text-white font-extrabold shadow-lg shadow-blue-500/20 scale-105' : 'text-slate-400 hover:text-slate-200 font-bold'}`}
+         >
+            <Edit className="w-4 h-4 mb-1" />
+            <span>Revisar</span>
          </button>
-         <button onClick={() => setActiveTab('map')} className={`flex-1 flex flex-col items-center py-3 text-xs border-l border-gray-200 ${activeTab === 'map' ? 'text-blue-600 font-bold bg-blue-50' : 'text-gray-500 font-medium'}`}>
-            <MapIcon className="w-5 h-5 mb-1" /> Map
+         <button 
+           onClick={() => setActiveTab('map')} 
+           className={`flex-1 flex flex-col items-center justify-center py-2 rounded-2xl text-[10px] tracking-wide transition-all duration-205 cursor-pointer ${activeTab === 'map' ? 'bg-gradient-to-tr from-blue-500 to-indigo-600 text-white font-extrabold shadow-lg shadow-blue-500/20 scale-105' : 'text-slate-400 hover:text-slate-200 font-bold'}`}
+         >
+            <MapIcon className="w-4 h-4 mb-1" />
+            <span>Mapa</span>
          </button>
-         <button onClick={() => setActiveTab('stats')} className={`flex-1 flex flex-col items-center py-3 text-xs border-l border-gray-200 ${activeTab === 'stats' ? 'text-blue-600 font-bold bg-blue-50' : 'text-gray-500 font-medium'}`}>
-            <BarChart className="w-5 h-5 mb-1" /> Stats
+         <button 
+           onClick={() => setActiveTab('stats')} 
+           className={`flex-1 flex flex-col items-center justify-center py-2 rounded-2xl text-[10px] tracking-wide transition-all duration-205 cursor-pointer ${activeTab === 'stats' ? 'bg-gradient-to-tr from-blue-500 to-indigo-600 text-white font-extrabold shadow-lg shadow-blue-500/20 scale-105' : 'text-slate-400 hover:text-slate-200 font-bold'}`}
+         >
+            <BarChart className="w-4 h-4 mb-1" />
+            <span>Métricas</span>
          </button>
-         <button onClick={() => setActiveTab('debug')} className={`flex-1 flex flex-col items-center py-3 text-xs border-l border-gray-200 ${activeTab === 'debug' ? 'text-blue-600 font-bold bg-blue-50' : 'text-gray-500 font-medium'}`}>
-            <Bug className="w-5 h-5 mb-1" /> Debug
+         <button 
+           onClick={() => setActiveTab('debug')} 
+           className={`flex-1 flex flex-col items-center justify-center py-2 rounded-2xl text-[10px] tracking-wide transition-all duration-205 cursor-pointer ${activeTab === 'debug' ? 'bg-gradient-to-tr from-rose-500 to-red-600 text-white font-extrabold shadow-lg shadow-red-500/20 scale-105' : 'text-slate-450 hover:text-rose-450 font-bold'}`}
+         >
+            <Bug className="w-4 h-4 mb-1" />
+            <span>Logs</span>
          </button>
-      </nav>
+      </div>
     </div>
   );
 }
