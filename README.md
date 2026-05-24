@@ -1,21 +1,31 @@
 # Route Planner & Dynamics 365 Extension 🚚📍
 
-Una solución integral y autónoma para la planificación de rutas de reparto diseñada especialmente para conductores y gestores de logística. Este ecosistema está compuesto por dos grandes piezas perfectamente integradas:
-
-1. **Route Planner Mobile & Web App**: Una aplicación optimizada para móviles (compilada para Android con Capacitor) y web que permite importar hojas de ruta, geolocalizarlas, ordenarlas de forma eficiente mediante algoritmos de optimización (TSP) y lanzarlas directamente en Google Maps.
-2. **Microsoft Edge Side Panel Extension**: Una extensión de navegador compatible con Microsoft Dynamics 365 (Pedidos de Venta) que permite extraer al instante datos de clientes, direcciones de entrega, pesos y cajas del pedido activo para volcarlos directamente en el planificador de rutas.
+Una solución integral y autónoma para la planificación y optimización de rutas de reparto. Este sistema está compuesto por una **aplicación web/móvil** y una **extensión para Microsoft Edge** compatible con **Microsoft Dynamics 365**.
 
 ---
 
-## 🔗 Enlaces de Acceso Rápido y Descargas Directas
-
-Para simplificar al máximo el uso a personas sin conocimientos técnicos (¡ideal para compartir con tu jefe!), hemos preparado los siguientes accesos directos de un solo clic:
-
-* 🌐 **[Aplicación Web En Vivo (GitHub Pages)](https://baituman420.github.io/route-planner-dynamics-extension/)**: Ejecuta la aplicación directamente en tu navegador sin instalar nada. Incluye una **ruta de demostración en Bilbao precargada automáticamente** (5 paradas de reparto geolocalizadas y optimizadas, listas para simular la navegación en tiempo real).
-* 📦 **[Descargar Extensión para Edge (ZIP de un clic)](https://raw.githubusercontent.com/baituman420/route-planner-dynamics-extension/main/extension.zip)**: Descarga directa del paquete compilado de la extensión. Solo descárgalo, descomprímelo y cárgalo en `edge://extensions` siguiendo las instrucciones de abajo.
-* 🤖 **[Descargar Aplicación para Android (APK Directo)](https://raw.githubusercontent.com/baituman420/route-planner-dynamics-extension/main/route-planner.apk)**: Descarga directa del instalador nativo APK para instalar el planificador de rutas y lector de albaranes directamente en tu móvil o tablet de reparto.
+> [!IMPORTANT]
+> ### 🚀 CÓMO USAR Y EVALUAR LA APLICACIÓN AL INSTANTE (Sin Consola ni Comandos)
+> Si estás revisando el sistema (¡especialmente pensado para el Jefe!), **no necesitas instalar Node, NPM ni ejecutar comandos de terminal**. Todo el ecosistema ha sido compilado y preparado para utilizarse con un solo click:
+>
+> 1. 🌐 **[PROBAR APLICACIÓN EN VIVO (Click Aquí)](https://baituman420.github.io/route-planner-dynamics-extension/)**
+>    * Abre la aplicación directamente en tu navegador. **Precargará automáticamente una ruta de demostración de Bilbao** (5 paradas de reparto geolocalizadas y optimizadas, listas para simular la entrega). ¡Ideal para ver el mapa interactivo y los gráficos de rendimiento al instante!
+>
+> 2. 📦 **[DESCARGAR EXTENSIÓN PARA EDGE (ZIP Directo)](https://raw.githubusercontent.com/baituman420/route-planner-dynamics-extension/main/extension.zip)**
+>    * Descarga la extensión lista para conectar con **Microsoft Dynamics 365**.
+>    * **Cómo instalarla en Edge:**
+>      1. Descarga el archivo [extension.zip](https://raw.githubusercontent.com/baituman420/route-planner-dynamics-extension/main/extension.zip) y descomprímelo en tu ordenador (click derecho > *Extraer todo*).
+>      2. Abre Microsoft Edge y navega a: `edge://extensions`
+>      3. Activa el interruptor **"Modo de desarrollador"** (abajo a la izquierda).
+>      4. Haz click en el botón **"Cargar extensión descomprimida"** (arriba a la izquierda) y selecciona la carpeta que acabas de descomprimir.
+>      5. ¡Listo! Al abrir Dynamics 365 tendrás el panel lateral inteligente activo y listo para extraer pedidos de venta.
+>
+> 3. 🤖 **[DESCARGAR APLICACIÓN PARA ANDROID (APK Directo)](https://raw.githubusercontent.com/baituman420/route-planner-dynamics-extension/main/route-planner.apk)**
+>    * Descarga e instala la app en tu teléfono o tablet de reparto.
+>    * Abre el enlace desde tu Android, descarga el archivo `route-planner.apk` e instálalo para probar el lector OCR de albaranes mediante la cámara y la sincronización con Google Maps.
 
 ---
+
 
 
 ## 🌟 Características Clave
@@ -61,7 +71,7 @@ Para simplificar al máximo el uso a personas sin conocimientos técnicos (¡ide
 
 ---
 
-## 🚀 Guía de Instalación y Desarrollo
+## 🛠️ Guía de Desarrollo (Solo para Programadores)
 
 ### 1. Requisitos Previos
 * **Node.js** (Versión 18 o superior).
