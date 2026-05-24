@@ -12,10 +12,11 @@ export const COLORS = [
 interface RouteManagerProps {
   onImport: (files: File[], drivers: Driver[]) => void;
   onLoadSession: (session: RouteSession) => void;
+  onLoadDemo?: () => void;
   loading: boolean;
 }
 
-export const RouteManager: React.FC<RouteManagerProps> = ({ onImport, onLoadSession, loading }) => {
+export const RouteManager: React.FC<RouteManagerProps> = ({ onImport, onLoadSession, onLoadDemo, loading }) => {
   const [drivers, setDrivers] = useState<Driver[]>([
     { id: '1', name: 'Driver 1', color: COLORS[0] }
   ]);
@@ -197,21 +198,29 @@ export const RouteManager: React.FC<RouteManagerProps> = ({ onImport, onLoadSess
           <Upload className="w-8 h-8" />
         </div>
         <h3 className="font-bold text-gray-800 text-sm mb-1">Importar Hojas de Reparto</h3>
-        <p className="text-gray-400 text-xs max-w-xs mb-6">
-          Sube tus archivos PDF de venta activa. Extraeremos automáticamente los clientes y sus ubicaciones.
+        <p className="text-gray-400 text-xs max-w-xs mb-4">
+          Sube tus archivos PDF de venta activa o carga la ruta de prueba para evaluar el trazado inteligente.
         </p>
-        <label className={`relative overflow-hidden bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-6 py-3 rounded-xl cursor-pointer hover:shadow-lg transition active:scale-95 text-center w-full max-w-xs ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
-           {loading ? (
-             <span className="flex items-center justify-center gap-2">
-               <span className="relative flex h-2 w-2">
-                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                 <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-sm justify-center">
+          <label className={`relative overflow-hidden bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-5 py-3 rounded-xl cursor-pointer hover:shadow-lg transition active:scale-95 text-center flex-1 w-full ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
+             {loading ? (
+               <span className="flex items-center justify-center gap-2">
+                 <span className="animate-pulse">Procesando...</span>
                </span>
-               Procesando documento...
-             </span>
-           ) : 'Seleccionar Archivos PDF'}
-           <input type="file" multiple accept="application/pdf" className="hidden" onChange={handleFileUpload} disabled={loading} />
-        </label>
+             ) : 'Seleccionar PDF'}
+             <input type="file" multiple accept="application/pdf" className="hidden" onChange={handleFileUpload} disabled={loading} />
+          </label>
+          {onLoadDemo && (
+            <button
+              type="button"
+              onClick={onLoadDemo}
+              disabled={loading}
+              className="flex items-center justify-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-5 py-3 rounded-xl hover:shadow-lg transition active:scale-95 text-center flex-1 w-full cursor-pointer border border-slate-800"
+            >
+              <Sparkles className="w-4 h-4 text-amber-400 fill-amber-400" /> Cargar Demo Bilbao
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
