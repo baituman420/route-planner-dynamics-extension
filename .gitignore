@@ -1,0 +1,35 @@
+# Dependency directories
+node_modules/
+/route-planner-app/node_modules/
+
+# Build outputs
+dist/
+/route-planner-app/dist/
+tmp/
+out/
+build/
+.gradle/
+capacitor-cordova-android-plugins/
+
+# Heavy binaries & assets
+*.apk
+*.pdf
+route-planner-app.apk
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local env files
+.env
+.env.local
+.env.*.local

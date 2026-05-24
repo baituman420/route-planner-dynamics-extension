@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Route Planner</string>
+    <string name="title_activity_main">Route Planner</string>
+    <string name="package_name">com.baituman.routeplanner</string>
+    <string name="custom_url_scheme">com.baituman.routeplanner</string>
+</resources>

@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Route Planner - Dynamics 365 Integration",
+  "version": "1.0.0",
+  "description": "Optimiza y planifica tus rutas de entrega directamente desde tus Pedidos de Ventas en Microsoft Dynamics 365.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "sidePanel",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.dynamics.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Abrir Planificador de Rutas en Panel Lateral"
+  },
+  "side_panel": {
+    "default_path": "index.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.dynamics.com/*"
+      ],
+      "js": [
+        "contentScript.js"
+      ],
+      "run_at": "document_end"
+    }
+  ]
+}
