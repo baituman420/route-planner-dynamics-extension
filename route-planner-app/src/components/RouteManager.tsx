@@ -1,25 +1,29 @@
 import React, { useState } from 'react';
-import { Upload, Plus, Trash2, History, Play, Users, MapPin, Layers, Sparkles } from 'lucide-react';
+import { Upload, Plus, Trash2, History, Play, Users, MapPin, Layers, Sparkles, Download } from 'lucide-react';
 import type { Driver, RouteSession } from '../types';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/db';
+import { ExcelImportWizard } from './ExcelImportWizard';
+import { createExcelTemplate, type ExcelImportResult } from '../utils/excelParser';
 
-export const COLORS = [
+const COLORS = [
   '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b',
   '#ec4899', '#14b8a6', '#f97316', '#ef4444'
 ];
 
 interface RouteManagerProps {
   onImport: (files: File[], drivers: Driver[]) => void;
+  onImportExcel: (file: File, result: ExcelImportResult, drivers: Driver[]) => void;
   onLoadSession: (session: RouteSession) => void;
   onLoadDemo?: () => void;
   loading: boolean;
 }
 
-export const RouteManager: React.FC<RouteManagerProps> = ({ onImport, onLoadSession, onLoadDemo, loading }) => {
+export const RouteManager: React.FC<RouteManagerProps> = ({ onImport, onImportExcel, onLoadSession, onLoadDemo, loading }) => {
   const [drivers, setDrivers] = useState<Driver[]>([
     { id: '1', name: 'Driver 1', color: COLORS[0] }
   ]);
+  const [excelFile, setExcelFile] = useState<File | null>(null);
 
   const pastSessions = useLiveQuery(() => db.sessions.orderBy('importedAt').reverse().toArray());
 
@@ -45,7 +49,29 @@ export const RouteManager: React.FC<RouteManagerProps> = ({ onImport, onLoadSess
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const files = Array.from(e.target.files);
-    onImport(files, drivers);
+    const excelFiles = files.filter(file => /\.(xlsx|xls)$/i.test(file.name));
+    const pdfFiles = files.filter(file => file.type === 'application/pdf' || /\.pdf$/i.test(file.name));
+    e.target.value = '';
+    if (excelFiles.length && pdfFiles.length) {
+      alert('Importa PDF y Excel por separado para poder revisar cada Excel antes de confirmarlo.');
+      return;
+    }
+    if (excelFiles.length > 1) {
+      alert('El onboarding procesa un Excel cada vez. Selecciona un único archivo.');
+      return;
+    }
+    if (excelFiles[0]) setExcelFile(excelFiles[0]);
+    else if (pdfFiles.length) onImport(pdfFiles, drivers);
+    else alert('Formato no compatible. Selecciona PDF, XLSX o XLS.');
+  };
+
+  const downloadTemplate = () => {
+    const url = URL.createObjectURL(createExcelTemplate());
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'plantilla-ruta-reparto.xlsx';
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleDeleteSession = async (id: string) => {
@@ -199,7 +225,7 @@ export const RouteManager: React.FC<RouteManagerProps> = ({ onImport, onLoadSess
         </div>
         <h3 className="font-bold text-gray-800 text-sm mb-1">Importar Hojas de Reparto</h3>
         <p className="text-gray-400 text-xs max-w-xs mb-4">
-          Sube tus archivos PDF de venta activa o carga la ruta de prueba para evaluar el trazado inteligente.
+          Sube PDF o Excel. Si eliges Excel, te guiaremos para detectar columnas, revisar errores y confirmar las paradas.
         </p>
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-sm justify-center">
           <label className={`relative overflow-hidden bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-5 py-3 rounded-xl cursor-pointer hover:shadow-lg transition active:scale-95 text-center flex-1 w-full ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
@@ -207,8 +233,8 @@ export const RouteManager: React.FC<RouteManagerProps> = ({ onImport, onLoadSess
                <span className="flex items-center justify-center gap-2">
                  <span className="animate-pulse">Procesando...</span>
                </span>
-             ) : 'Seleccionar PDF'}
-             <input type="file" multiple accept="application/pdf" className="hidden" onChange={handleFileUpload} disabled={loading} />
+             ) : 'Importar PDF o Excel'}
+             <input type="file" multiple accept="application/pdf,.pdf,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" className="hidden" onChange={handleFileUpload} disabled={loading} />
           </label>
           {onLoadDemo && (
             <button
@@ -221,7 +247,19 @@ export const RouteManager: React.FC<RouteManagerProps> = ({ onImport, onLoadSess
             </button>
           )}
         </div>
+        <button type="button" onClick={downloadTemplate} className="mt-3 text-[11px] font-bold text-blue-600 hover:text-blue-800 inline-flex items-center gap-1.5"><Download className="w-3.5 h-3.5" /> Descargar plantilla Excel</button>
       </div>
+      {excelFile && (
+        <ExcelImportWizard
+          file={excelFile}
+          drivers={drivers}
+          onCancel={() => setExcelFile(null)}
+          onConfirm={(file, result, selectedDrivers) => {
+            onImportExcel(file, result, selectedDrivers);
+            setExcelFile(null);
+          }}
+        />
+      )}
     </div>
   );
 };

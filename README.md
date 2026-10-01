@@ -41,7 +41,7 @@ Una solución integral y autónoma para la planificación y optimización de rut
 * **Modo Simulación (Pruebas)**: Permite probar toda la lógica de importación en entornos de desarrollo tradicionales (`localhost`) inyectando datos de prueba controlados sin necesidad de conectarse a Dynamics.
 
 ### 2. Planificador y Optimizador de Rutas (App React)
-* **Importación Inteligente de PDFs**: Procesa hojas de expedición logística (archivos PDF) localmente usando `pdfjs-dist` y heurísticas de proximidad espacial de textos. Todo en el dispositivo, 100% privado.
+* **Importación guiada de PDF y Excel**: Procesa PDFs y libros `.xlsx`/`.xls` localmente. El onboarding Excel detecta columnas, muestra una vista previa, explica las filas omitidas y pide confirmación antes de crear la ruta.
 * **Escáner OCR Incorporado**: Permite utilizar la cámara de tu dispositivo móvil para escanear albaranes o notas de entrega físicas, convirtiéndolos en paradas de ruta de inmediato.
 * **Base de Datos Persistente (Dexie.js / IndexedDB)**: Guarda el historial completo de tus sesiones de ruta y el índice de clientes de forma persistente. Puedes recuperar cualquier sesión anterior al instante si la aplicación o el navegador se cierran.
 * **Editor Multiuso**: Interfaz con botones táctiles de gran tamaño ideales para su uso en cabina. Permite ajustar datos del cliente, definir prioridades (ir primero, ir al final), cambiar tiempos estimados de descarga y excluir paradas específicas.
@@ -50,6 +50,25 @@ Una solución integral y autónoma para la planificación y optimización de rut
   * Mapa dinámico con trazado de la ruta optimizada por conductor.
   * Botones de navegación directa que lanzan intents de Google Maps (`google.navigation:q=lat,lng`), asegurando una navegación fluida en cabina.
 * **Panel de Estadísticas**: Gráficos e indicadores de rendimiento que calculan tiempos totales de trayecto, kilometraje estimado, peso y cantidad de paquetes distribuidos por conductor.
+
+---
+
+## 📊 Probar la importación Excel
+
+En la demo pulsa **Importar PDF o Excel** y selecciona un único `.xlsx` o `.xls`. También puedes descargar desde la misma pantalla una plantilla lista para rellenar.
+
+El asistente usa la primera hoja con datos, detecta automáticamente encabezados habituales en español e inglés y presenta una vista previa antes de importar. El mínimo por fila es:
+
+- `Cliente` (o `Nombre cliente`, `Razón social`, `Customer`).
+- `Dirección`; alternativamente, `Latitud` y `Longitud` válidas.
+
+Columnas opcionales: `Pedido`/`Referencia`, `CP`, `Población`, `Peso`, `Bultos`, `Hora desde` y `Hora hasta`. Ejemplo:
+
+| Pedido | Cliente | Dirección | CP | Población | Peso | Bultos | Hora desde | Hora hasta |
+| --- | --- | --- | --- | --- | ---: | ---: | --- | --- |
+| PED-001 | Cliente ejemplo | Gran Vía 45 | 48011 | Bilbao | 42,5 | 8 | 09:00 | 13:00 |
+
+Las filas vacías o sin cliente/ubicación se muestran como omitidas y nunca se rellenan silenciosamente. Tras confirmar, las paradas usan el editor, la geocodificación, el histórico local y el optimizador existentes.
 
 ---
 

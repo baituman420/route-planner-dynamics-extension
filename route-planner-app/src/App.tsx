@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { parsePdfToStops } from './utils/pdfParser';
+import type { ExcelImportResult } from './utils/excelParser';
 import { geocodeAddress, optimizeForDrivers } from './utils/geocoder';
 import type { DeliveryStop, RouteSession, Driver } from './types';
 import { RouteMap } from './components/Map';
@@ -768,10 +769,35 @@ function App() {
       await saveSessionToDB(newSession);
       setActiveTab('review');
     } catch (error) {
-       alert("Error parsing PDFs.");
+       alert("No se pudieron importar los PDF. Revisa que sean archivos válidos.");
        console.error(error);
     } finally {
        setLoading(false);
+    }
+  };
+
+  const handleExcelImport = async (file: File, result: ExcelImportResult, drivers: Driver[]) => {
+    setLoading(true);
+    try {
+      setRawRows([
+        `Excel: ${file.name} · Hoja: ${result.sheetName}`,
+        `Filas: ${result.totalRows} · Importadas: ${result.stops.length} · Omitidas: ${result.skippedRows.length}`,
+        ...result.skippedRows.map(item => `Fila ${item.row}: ${item.reason}`)
+      ]);
+      const newSession: RouteSession = {
+        id: Date.now().toString(),
+        fileName: file.name,
+        importedAt: Date.now(),
+        drivers,
+        stops: result.stops,
+        status: 'imported',
+        notes: result.skippedRows.length ? `${result.skippedRows.length} filas omitidas durante la validación Excel.` : 'Excel validado sin filas omitidas.'
+      };
+      setSession(newSession);
+      await saveSessionToDB(newSession);
+      setActiveTab('review');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -989,7 +1015,7 @@ function App() {
         )}
 
         {activeTab === 'manager' && (
-          <RouteManager onImport={handleImport} onLoadSession={handleLoadSession} onLoadDemo={handleLoadDemo} loading={loading} />
+          <RouteManager onImport={handleImport} onImportExcel={handleExcelImport} onLoadSession={handleLoadSession} onLoadDemo={handleLoadDemo} loading={loading} />
         )}
 
         {activeTab === 'review' && session && (
